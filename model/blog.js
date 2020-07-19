@@ -6,10 +6,10 @@ const BlogSchema=new Schema({
         type:String,
         required:true
     },
-    desc:{
+    blog:{
         type:String,
         required:true
     }
 })
 
-module.exports=mongoose.Schema('Blog',BlogSchema);
+module.exports=mongoose.model('Blog',BlogSchema);

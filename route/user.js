@@ -15,12 +15,12 @@ router.post('/signup', (req, res, next) => {
 		return next(err);
         }
         User.create({
-            fName: req.body.fName,
-            lName: req.body.lNname,
+            Fname: req.body.Fname,
+            Lname: req.body.Lname,
             username: req.body.username,
-            phoneno:req.body.phoneno,
             password: hash,
-            image: req.body.image
+            image: req.body.image,
+            admin:req.body.admin
         }).then((user) => {
             let token = jwt.sign({ _id: user._id }, process.env.SECRET);
             res.json({ status: "Signup Successful", token: token });
@@ -35,6 +35,7 @@ router.post('/login', (req, res, next) => {
                 let err = new Error('User not found!');
                 console.log(req.body.username);
                 err.status = 401;
+                console.log("helllo")
                 return next(err);
             } else {
                 bcrypt.compare(req.body.password, user.password)
@@ -46,14 +47,24 @@ router.post('/login', (req, res, next) => {
                         }
                     
                         let token = jwt.sign({ _id: user._id }, process.env.SECRET);
-                        res.json({ status: 'Login successful', token: token });
+                        res.json({ status: 'Login successful', token: token, admin:user.admin });
+                        console.log(user.admin);
                     }).catch(next);
             }
         }).catch(next);
 })
 
+router.put('/me', auth.verifyUser, (req, res, next) => {
+    User.findByIdAndUpdate(req.user._id, { $set: req.body }, { new: true })
+        .then((user) => {
+            res.json({ _id: user._id, Fname: req.user.Fname, Lname: req.user.Lname,username:req.user.username,password:req.user.password});
+            
+        }).catch(next);
+       
+});
+
 router.get('/me', auth.verifyUser, (req, res, next) => {
-    res.json({ _id: req.user._id, fName: req.user.fName, lName: req.user.lName, username: req.user.username});
+    res.json({ _id: req.user._id, Fname: req.user.Fname, Lname: req.user.Lname, username: req.user.username,password:req.user.password});
     
 });
 

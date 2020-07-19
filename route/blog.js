@@ -5,7 +5,7 @@ const Blog=require('../model/blog');
 router.post('/create',(req,res,next)=>{
     Blog.create({
         title:req.body.title,
-        desc:req.body.body
+        blog:req.body.blog
     })
     .then(blog=>{
         res.send(blog)
@@ -29,12 +29,19 @@ router.get('/getblogs',(req,res,next)=>{
 })
 
 router.put('/update/:id',(req, res, next) => {
-    Item.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+    Blog.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
             .then((blog) => {
                 if (blog == null) throw new Error("Unable to find the blog");
-                res.json(blog);
-                console.log(blog)    
+                res.json(blog);   
             }).catch(next);
             
     });
+
+    router.delete('/remove/:id',(req,res,next)=>{
+        Blog.deleteOne({_id:req.params.id})
+        .then(blog=>{
+            console.log(blog);
+            res.send(blog);
+        }).catch(next);
+    })
 module.exports=router;
